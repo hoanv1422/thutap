@@ -10,7 +10,7 @@ use Illuminate\Support\Facades\Storage;
 class ProductController extends Controller
 {
     //
-    /**
+   /**
      * Hiển thị danh sách sản phẩm.
      */
     public function index()
