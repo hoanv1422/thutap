@@ -5,6 +5,7 @@ import Login from '../views/Login.vue'
 import Register from '../views/Register.vue' 
 import Posts from '../views/Posts.vue'
 import CreatePost from '../components/CreatePost.vue'; 
+import Tasks from '../components/Task.vue';
 const routes = [
   {
     path: '/',
@@ -62,6 +63,30 @@ const routes = [
     path: '/posts/:id/edit', 
     name: 'edit-post',
     component: () => import('../components/EditPost.vue'),
+    meta: { requiresAuth: true }
+  },
+  {
+    path: '/Tasks',
+    name: 'Task',
+    component: Tasks,
+    meta: { requiresAuth: true }
+  },
+  {
+    path: '/Tasks/create',
+    name: 'create-Task',
+    component: () => import('../components/CreateTask.vue'),
+    meta: { requiresAuth: true }
+  },
+  {
+    path: '/Tasks/:id', 
+    name: 'Task-detail',
+    component: () => import('../components/TaskDetail.vue'),
+    meta: { requiresAuth: true }
+  },
+  {
+    path: '/Tasks/:id/edit', 
+    name: 'edit-Task',
+    component: () => import('../components/EditTask.vue'),
     meta: { requiresAuth: true }
   }
 ]

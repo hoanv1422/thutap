@@ -1,3 +1,4 @@
+<!-- app.vue -->
 <template>
     <div class="container-fluid px-0">
       <!-- Navigation Bar -->
@@ -16,7 +17,9 @@
               <li class="nav-item" v-if="authStore.isAuthenticated">
                 <router-link to="/posts" class="nav-link">Bài viết</router-link>
               </li>
-  
+              <li class="nav-item" v-if="authStore.isAuthenticated">
+                <router-link to="/tasks" class="nav-link">Công việc</router-link>
+              </li>
               <!-- Guest Links -->
               <li class="nav-item" v-if="!authStore.isAuthenticated">
                 <router-link to="/login" class="nav-link">Đăng nhập</router-link>
