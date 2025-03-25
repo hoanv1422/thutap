@@ -13,7 +13,9 @@ return new class extends Migration
     {
         Schema::table('tasks', function (Blueprint $table) {
             //
-            $table->timestamp('start_time')->nullable()->after('description');
+               // Ví dụ: thay đổi kiểu dữ liệu progress từ integer sang unsignedTinyInteger
+               $table->unsignedTinyInteger('progress')->default(0)->change();
+
         });
     }
 
@@ -24,7 +26,6 @@ return new class extends Migration
     {
         Schema::table('tasks', function (Blueprint $table) {
             //
-            $table->dropColumn('start_time');
         });
     }
 };

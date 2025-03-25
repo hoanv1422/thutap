@@ -1,25 +1,57 @@
 <template>
   <div class="container mt-5">
-    <h1 class="mb-4">Chi tiết Công việc</h1>
-    <div v-if="task">
-      <p><strong>Tên công việc:</strong> {{ task.name }}</p>
-      <p><strong>Mô tả:</strong> {{ task.description }}</p>
-      <p><strong>Trạng thái:</strong> {{ getStatusLabel(task.status) }}</p>
-      <p><strong>Thời gian bắt đầu:</strong> {{ formatDate(task.start_time) }}</p>
-      <p><strong>Ngày hết hạn:</strong> {{ formatDate(task.deadline) }}</p>
-      <p>
-        <strong>Người được phân công:</strong>
-        <!-- Hiển thị danh sách tên người được phân công -->
-        {{ task.users && task.users.length ? task.users.map(u => u.name).join(', ') : 'Chưa phân công' }}
-      </p>
-      <router-link :to="`/tasks/${task.id}/edit`" class="btn btn-warning me-2">
-        Chỉnh sửa
-      </router-link>
-      <router-link to="/tasks" class="btn btn-secondary">
-        Quay lại danh sách
-      </router-link>
+    <div class="card shadow-sm profile-card" v-if="task">
+      <div class="card-header bg-primary text-white">
+        <h2 class="mb-0">Chi tiết Công việc</h2>
+      </div>
+      <div class="card-body">
+        <h4 class="card-title">{{ task.name }}</h4>
+        <p class="card-text"><strong>Mô tả:</strong> {{ task.description || 'Không có mô tả' }}</p>
+
+        <div class="row mb-3">
+          <div class="col-md-6">
+            <p>
+              <strong>Trạng thái:</strong>
+              <span class="badge" :class="getStatusClass(task.status)">
+                {{ getStatusLabel(task.status) }}
+              </span>
+            </p>
+          </div>
+          <div class="col-md-6">
+            <p>
+              <strong>Ưu tiên:</strong>
+              <span class="badge bg-info">
+                {{ task.priority }}
+              </span>
+            </p>
+          </div>
+        </div>
+
+        <div class="row mb-3">
+          <div class="col-md-6">
+            <p><strong>Thời gian bắt đầu:</strong> {{ formatDate(task.start_time) }}</p>
+          </div>
+          <div class="col-md-6">
+            <p><strong>Ngày hết hạn:</strong> {{ formatDate(task.deadline) }}</p>
+          </div>
+        </div>
+
+        <p>
+          <strong>Người được phân công:</strong>
+          <span v-if="task.users && task.users.length">
+            {{task.users.map(u => u.name).join(', ')}}
+          </span>
+          <span v-else>
+            Chưa phân công
+          </span>
+        </p>
+      </div>
+      <div class="card-footer d-flex justify-content-end">
+        <router-link :to="`/tasks/${task.id}/edit`" class="btn btn-warning me-2">Chỉnh sửa</router-link>
+        <router-link to="/tasks" class="btn btn-secondary">Quay lại danh sách</router-link>
+      </div>
     </div>
-    <div v-else>
+    <div v-else class="text-center">
       <p>Đang tải dữ liệu...</p>
     </div>
   </div>
@@ -34,17 +66,16 @@ const route = useRoute()
 const taskId = route.params.id
 const task = ref(null)
 
-// Hàm lấy chi tiết công việc từ API
 const fetchTask = async () => {
   try {
     const response = await axios.get(`/api/tasks/${taskId}`)
+    // Giả sử dữ liệu task nằm trong response.data.data
     task.value = response.data.data
   } catch (error) {
     alert('Lỗi tải dữ liệu công việc')
   }
 }
 
-// Hàm chuyển đổi trạng thái thành nhãn thân thiện
 const getStatusLabel = (status) => {
   switch (status) {
     case 'pending':
@@ -60,7 +91,21 @@ const getStatusLabel = (status) => {
   }
 }
 
-// Hàm định dạng ngày tháng
+const getStatusClass = (status) => {
+  switch (status) {
+    case 'pending':
+      return 'bg-secondary'
+    case 'in_progress':
+      return 'bg-info'
+    case 'completed':
+      return 'bg-success'
+    case 'canceled':
+      return 'bg-danger'
+    default:
+      return 'bg-light text-dark'
+  }
+}
+
 const formatDate = (date) => {
   if (!date) return 'Không có'
   const options = { year: 'numeric', month: 'long', day: 'numeric' }
@@ -74,7 +119,51 @@ onMounted(() => {
 
 <style scoped>
 .container {
-  max-width: 600px;
+  max-width: 700px;
   margin: auto;
+}
+
+.profile-card {
+  border: none;
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.card-header {
+  padding: 1rem 1.5rem;
+  border-bottom: 2px solid rgba(255, 255, 255, 0.3);
+}
+
+.card-body {
+  padding: 1.5rem;
+}
+
+.card-title {
+  font-size: 1.75rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
+}
+
+.card-text {
+  font-size: 1rem;
+  color: #555;
+}
+
+.row p {
+  margin-bottom: 0.5rem;
+}
+
+.badge {
+  font-size: 0.9rem;
+  padding: 0.5em 0.75em;
+}
+
+.card-footer {
+  background-color: #f8f9fa;
+  padding: 0.75rem 1.5rem;
+}
+
+.btn {
+  min-width: 130px;
 }
 </style>

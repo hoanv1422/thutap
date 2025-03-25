@@ -1,11 +1,19 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import { useAuthStore } from '../stores/authStore' 
+import { useAuthStore } from '../stores/authStore'
 import Dashboard from '../views/Dashboard.vue'
-import Login from '../views/Login.vue' 
-import Register from '../views/Register.vue' 
+import Login from '../views/Login.vue'
+import Register from '../views/Register.vue'
 import Posts from '../views/Posts.vue'
-import CreatePost from '../components/CreatePost.vue'; 
-import Tasks from '../components/Task.vue';
+import CreatePost from '../components/CreatePost.vue'
+import Tasks from '../components/Task.vue'
+import UserList from '@/views/UserList.vue'
+import UserProfile from '@/views/UserProfile.vue'
+
+// Sử dụng lazy load cho các component cần thiết
+const EditProfile = () => import('../components/EditProfile.vue')
+const ChangePassword = () => import('../components/ChangePassword.vue')
+const EditUser = () => import('@/views/UserEdit.vue')
+
 const routes = [
   {
     path: '/',
@@ -20,13 +28,13 @@ const routes = [
   {
     path: '/login',
     name: 'login',
-    component: Login, 
-    meta: { guestOnly: true } 
+    component: Login,
+    meta: { guestOnly: true }
   },
   {
     path: '/register',
     name: 'register',
-    component: Register, 
+    component: Register,
     meta: { guestOnly: true }
   },
   {
@@ -38,7 +46,13 @@ const routes = [
   {
     path: '/profile/edit',
     name: 'edit-profile',
-    component: () => import('../components/EditProfile.vue'),
+    component: EditProfile,
+    meta: { requiresAuth: true }
+  },
+  {
+    path: '/profile/password',
+    name: 'change-password',
+    component: ChangePassword,
     meta: { requiresAuth: true }
   },
   {
@@ -54,13 +68,13 @@ const routes = [
     meta: { requiresAuth: true }
   },
   {
-    path: '/posts/:id', 
+    path: '/posts/:id',
     name: 'post-detail',
     component: () => import('../components/PostDetail.vue'),
     meta: { requiresAuth: true }
   },
   {
-    path: '/posts/:id/edit', 
+    path: '/posts/:id/edit',
     name: 'edit-post',
     component: () => import('../components/EditPost.vue'),
     meta: { requiresAuth: true }
@@ -78,15 +92,33 @@ const routes = [
     meta: { requiresAuth: true }
   },
   {
-    path: '/Tasks/:id', 
+    path: '/Tasks/:id',
     name: 'Task-detail',
     component: () => import('../components/TaskDetail.vue'),
     meta: { requiresAuth: true }
   },
   {
-    path: '/Tasks/:id/edit', 
+    path: '/Tasks/:id/edit',
     name: 'edit-Task',
     component: () => import('../components/EditTask.vue'),
+    meta: { requiresAuth: true }
+  },
+  {
+    path: '/users',
+    name: 'user-list',
+    component: UserList,
+    meta: { requiresAuth: true }
+  },
+  {
+    path: '/users/:id',
+    name: 'user-profile',
+    component: UserProfile,
+    meta: { requiresAuth: true }
+  },
+  {
+    path: '/users/:id/edit',
+    name: 'edit-user',
+    component: EditUser,
     meta: { requiresAuth: true }
   }
 ]
@@ -96,23 +128,18 @@ const router = createRouter({
   routes
 })
 
-
 router.beforeEach(async (to, from, next) => {
   const authStore = useAuthStore()
-  
-  // Kiểm tra trạng thái xác thực
   await authStore.checkAuth()
-  
-  // Xử lý route yêu cầu đăng nhập
+
   if (to.meta.requiresAuth && !authStore.isAuthenticated) {
     next('/login')
-  } 
-  // Xử lý route chỉ dành cho khách
-  else if (to.meta.guestOnly && authStore.isAuthenticated) {
+  } else if (to.meta.guestOnly && authStore.isAuthenticated) {
     next('/dashboard')
-  } 
-  // Cho phép truy cập
-  else {
+  } else if (to.name === 'edit-user' && authStore.user.role !== 'admin' && to.params.id !== authStore.user.id) {
+    alert('Bạn không có quyền chỉnh sửa người dùng khác')
+    next('/users')
+  } else {
     next()
   }
 })

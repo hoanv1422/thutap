@@ -6,25 +6,18 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
-    public function up(): void
+    public function up()
     {
         Schema::table('tasks', function (Blueprint $table) {
-            //
-            $table->dropForeign(['assigned_user_id']);
-            $table->dropColumn('assigned_user_id');
+            $table->softDeletes();
         });
     }
-
-    /**
-     * Reverse the migrations.
-     */
-    public function down(): void
+    
+    public function down()
     {
         Schema::table('tasks', function (Blueprint $table) {
-            //
+            $table->dropSoftDeletes();
         });
     }
+    
 };

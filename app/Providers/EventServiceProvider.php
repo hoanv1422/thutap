@@ -18,6 +18,12 @@ class EventServiceProvider extends ServiceProvider
         Registered::class => [
             SendEmailVerificationNotification::class,
         ],
+        \App\Events\TaskAssigned::class => [
+            \App\Listeners\StoreTaskNotification::class,
+        ],
+        \App\Events\TaskUpdated::class => [
+            \App\Listeners\UpdateTaskNotification::class,
+        ],
     ];
 
     /**

@@ -12,13 +12,11 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('task_attachments', function (Blueprint $table) {
-            
-                $table->id();
-                $table->foreignId('task_id')->constrained()->onDelete('cascade'); // Công việc liên quan
-                $table->string('file_path'); // Đường dẫn file
-                $table->string('file_name'); // Tên file gốc
-                $table->timestamps();
-         
+            $table->id();
+            $table->foreignId('task_id')->constrained()->onDelete('cascade'); // Liên kết với công việc
+            $table->string('file_path'); // Đường dẫn file
+            $table->string('file_name'); // Tên file gốc
+            $table->timestamps();
         });
     }
 

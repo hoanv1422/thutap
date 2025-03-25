@@ -42,7 +42,7 @@ class AuthControllerTest extends TestCase
     public function test_logout_successfully()
     {
         $user = User::factory()->create();
-        $token = $user->createToken('auth_token')->plainTextToken;
+        $token = $user->createToken('sanctum_token')->plainTextToken;
 
         $response = $this->withHeader('Authorization', 'Bearer ' . $token)
             ->postJson('/api/logout');

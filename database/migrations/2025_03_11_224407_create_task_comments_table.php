@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('task_comments', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('task_id')->constrained()->onDelete('cascade'); // Công việc liên quan
+            $table->foreignId('task_id')->constrained()->onDelete('cascade'); // Liên kết với công việc
             $table->foreignId('user_id')->constrained()->onDelete('cascade'); // Người bình luận
             $table->text('comment'); // Nội dung bình luận
             $table->timestamps();

@@ -4,14 +4,14 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-
+use Illuminate\Database\Eloquent\SoftDeletes;
 class Task extends Model
 {
-    use HasFactory;
+    use HasFactory,SoftDeletes;
+
     protected $fillable = [
         'name',
         'description',
-        'start_time',
         'deadline',
         'status',
         'user_id',
@@ -19,19 +19,16 @@ class Task extends Model
         'progress',
         'attachment',
         'notes',
+        
     ];
 
-    // Quan hệ với người dùng được phân công
-    public function assignedUser()
-    {
-        return $this->belongsTo(User::class, 'assigned_user_id');
-    }
 
-    // Quan hệ với người tạo (owner)
+    // Quan hệ với người tạo 
     public function owner()
     {
         return $this->belongsTo(User::class, 'user_id');
     }
+
     // Quan hệ nhiều-nhiều: các thành viên tham gia công việc
     public function users()
     {
@@ -49,5 +46,4 @@ class Task extends Model
     {
         return $this->hasMany(TaskAttachment::class);
     }
-
 }

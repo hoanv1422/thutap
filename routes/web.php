@@ -1,5 +1,6 @@
 <?php
 
+use App\Events\TestEvent;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -14,6 +15,16 @@ use Illuminate\Support\Facades\Route;
 */
 
 
+// Route test
+Route::get('/test-broadcast', function () {
+    event(new TestEvent('Xin chào từ server!'));
+    return 'Đã bắn sự kiện TestEvent lên kênh test-channel.';
+});
+
+// Fallback cho Vue SPA
+Route::get('{any}', function () {
+    return view('index');
+})->where('any', '.*');
 Route::get('/', function () {
     return view('app'); 
 });

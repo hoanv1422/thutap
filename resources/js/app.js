@@ -1,23 +1,38 @@
-import { createApp } from 'vue';
-import { createPinia } from 'pinia';
-import App from './App.vue';
-import router from './router';
-import axios from 'axios';
+import { createApp } from 'vue'
+import { createPinia } from 'pinia'
+import persistedState from 'pinia-plugin-persistedstate'
+import App from './App.vue'
+import router from './router'
 
-// Cấu hình Axios để gửi cookie
-axios.defaults.baseURL = 'http://localhost:8000';
-axios.defaults.withCredentials = true;
-axios.defaults.headers.common['Accept'] = 'application/json';
+// Import cấu hình Axios
+import './bootstrap'
 
-import 'bootstrap-icons/font/bootstrap-icons.css';
-import 'bootstrap/dist/css/bootstrap.min.css';
-import 'bootstrap';
+// Import Echo & hàm subscribe
+import { subscribeToNotifications } from './echo'
 
-const app = createApp(App);
-app.use(createPinia());
-app.use(router);
+// Import store
+import { useAuthStore } from './stores/authStore'
 
-// Đưa Axios vào global để có thể sử dụng trong toàn bộ app
-app.config.globalProperties.$axios = axios;
+// Import CSS
+import 'bootstrap-icons/font/bootstrap-icons.css'
+import 'bootstrap/dist/css/bootstrap.min.css'
+import 'bootstrap'
 
-app.mount('#app');
+const app = createApp(App)
+
+const pinia = createPinia()
+// Sử dụng plugin persisted state cho Pinia
+pinia.use(persistedState)
+
+app.use(pinia)
+app.use(router)
+
+app.mount('#app')
+
+// Kiểm tra user, nếu có ID thì subscribe
+const authStore = useAuthStore()
+authStore.initialize().then(() => {
+    if (authStore.user?.id) {
+        subscribeToNotifications(authStore.user.id)
+    }
+})
